@@ -29,7 +29,7 @@ try
 }
 catch (ODataError ex)
 {
-    Console.WriteLine($"ODataError: {ex} {ex.Error?.Code}");
+    Console.WriteLine($"ODataError: {ex} {ex.Error?.Code} {ex.Error?.Message}");
     return;
 }
 catch (Exception ex)
@@ -37,4 +37,3 @@ catch (Exception ex)
     Console.WriteLine($"Error: {ex}");
     return;
 }
-
