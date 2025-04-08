@@ -1,11 +1,13 @@
 ﻿using Azure.Identity;
 using Microsoft.Graph;
+using Microsoft.Graph.Models.ODataErrors;
 
 var scopes = new[] { "https://graph.microsoft.com/.default" };
 
 var clientId = "YOUR_CLIENT_ID";
 var tenantId = "YOUR_TENANT_ID";
 var clientSecret = "YOUR_CLIENT_SECRET";
+var userPrincipleName = "YOUR_UPN";
 
 var options = new ClientSecretCredentialOptions
 {
@@ -17,6 +19,22 @@ var clientSecretCredential = new ClientSecretCredential(tenantId, clientId, clie
 
 var graphClient = new GraphServiceClient(clientSecretCredential, scopes);
 
-var drive = await graphClient.Me.Drive.GetAsync();
+try
+{
+    var user = await graphClient.Users[userPrincipleName].GetAsync();
+    Console.WriteLine(user?.DisplayName);
 
-Console.WriteLine(drive.Id);
+    var tasks = await graphClient.Users[userPrincipleName].Todo.Lists.GetAsync();
+    Console.WriteLine(tasks?.Value);
+}
+catch (ODataError ex)
+{
+    Console.WriteLine($"ODataError: {ex} {ex.Error?.Code}");
+    return;
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error: {ex}");
+    return;
+}
+
